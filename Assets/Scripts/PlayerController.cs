@@ -22,14 +22,16 @@ public class PlayerController : NetworkBehaviour
 
     private void Update()
     {
-        if (IsOwner || !Application.isFocused) return;
+        if (!Application.isFocused) return;
 
         Vector2 mousePosition = (Vector2)Input.mousePosition;
         mouseInput.x = Input.mousePosition.x;
         mouseInput.y = Input.mousePosition.y;
-        mouseInput.z = mainCamera.nearClipPlane;
+        
         Vector3 mouseWorldCoordinates = mainCamera.ScreenToWorldPoint((Vector3)mousePosition);
-        transform.position = Vector3.MoveTowards(current: transform.position, target: mouseWorldCoordinates, Time.deltaTime * speed);
+        transform.position = Vector3.MoveTowards(current: transform.position, target:mouseWorldCoordinates, 
+                maxDistanceDelta:Time.deltaTime * speed);
+        transform.position = new Vector3(transform.position.x, transform.position.y, 0);
 
         if (mouseWorldCoordinates != transform.position)
         {
@@ -38,6 +40,4 @@ public class PlayerController : NetworkBehaviour
             transform.up = targetDirection;
         }
     }
-
-
 }
