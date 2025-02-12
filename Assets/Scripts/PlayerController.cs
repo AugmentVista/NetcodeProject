@@ -3,4 +3,38 @@ using Unity.Netcode;
 
 public class PlayerController : NetworkBehaviour
 {
+    private Camera mainCamera;
+    private Vector3 mouseInput;
+    [SerializeField] private float speed = 3f;
+
+    private void Initiialize()
+    {
+        mainCamera = Camera.main;
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        Initiialize();
+    }
+
+    private void Update()
+    {
+        if (!Application.isFocused) return;
+
+        Vector2 mousePosition = (Vector2)Input.mousePosition;
+        mouseInput.x = Input.mousePosition.x;
+        mouseInput.y = Input.mousePosition.y;
+        mouseInput.z = mainCamera.nearClipPlane;
+        Vector3 mouseWorldCoordinates = mainCamera.ScreenToWorldPoint((Vector3)mousePosition);
+        transform.position = Vector3.MoveTowards(current: transform.position, target: mouseWorldCoordinates, Time.deltaTime * speed);
+
+        if (mouseWorldCoordinates != transform.position)
+        {
+            Vector3 targetDirection = mouseWorldCoordinates - transform.position;
+            transform.up = targetDirection;
+        }
+    }
+
+
 }
