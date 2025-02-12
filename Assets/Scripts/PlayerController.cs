@@ -3,9 +3,11 @@ using Unity.Netcode;
 
 public class PlayerController : NetworkBehaviour
 {
-    private Camera mainCamera;
-    private Vector3 mouseInput;
     [SerializeField] private float speed = 3f;
+
+    private Camera mainCamera;
+
+    private Vector3 mouseInput = Vector3.zero;
 
     private void Initiialize()
     {
@@ -20,7 +22,7 @@ public class PlayerController : NetworkBehaviour
 
     private void Update()
     {
-        if (!Application.isFocused) return;
+        if (IsOwner || !Application.isFocused) return;
 
         Vector2 mousePosition = (Vector2)Input.mousePosition;
         mouseInput.x = Input.mousePosition.x;
@@ -32,6 +34,7 @@ public class PlayerController : NetworkBehaviour
         if (mouseWorldCoordinates != transform.position)
         {
             Vector3 targetDirection = mouseWorldCoordinates - transform.position;
+            targetDirection.z = 0f;
             transform.up = targetDirection;
         }
     }
