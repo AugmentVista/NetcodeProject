@@ -22,6 +22,11 @@ public class PlayerController : NetworkBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            speed = (speed == 0f) ? 50f : 0f;
+        }
+
         if (!Application.isFocused) return;
 
         Vector2 mousePosition = (Vector2)Input.mousePosition;
@@ -38,6 +43,33 @@ public class PlayerController : NetworkBehaviour
             Vector3 targetDirection = mouseWorldCoordinates - transform.position;
             targetDirection.z = 0f;
             transform.up = targetDirection;
+        }
+    }
+
+    [ServerRpc]
+    private void DetermineCollisionWinnerServerRPC()
+    { 
+    
+    }
+
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Player Collision");
+        if (!collision.gameObject.CompareTag("Player")) return;
+        if (!IsOwner) return;
+    }
+
+
+    struct PlayerData : INetworkSerializable
+    {
+        public ulong Id;
+        public ushort Length;
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref Id);
+            serializer.SerializeValue(ref Length);
         }
     }
 }
