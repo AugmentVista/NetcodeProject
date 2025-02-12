@@ -55,6 +55,13 @@ public class PlayerController : NetworkBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.CompareTag("Ball"))
+        {
+            Rigidbody2D ballrb = collision.gameObject.GetComponent<Rigidbody2D>();
+            ballrb.AddForce(new Vector2(transform.position.x, transform.position.y));
+        }
+
+
         Debug.Log("Player Collision");
         if (!collision.gameObject.CompareTag("Player")) return;
         if (!IsOwner) return;
